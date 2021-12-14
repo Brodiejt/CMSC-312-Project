@@ -12,6 +12,7 @@ public class PCB {
 	long start;
 	long end;
 	boolean isChild;
+	int priority;
 
 	// PCB constructor
 	public PCB() {
@@ -23,6 +24,7 @@ public class PCB {
 		programStart = 0;
 		start = 0;
 		isChild = false;
+		priority = (int) ((Math.random() * (20 - 1)) + 1);;
 		
 	}
 
@@ -68,9 +70,9 @@ public class PCB {
 
 //Function to simulate execution of a given process. Iterates through an array of opcodes. Function also returns an integer to simulate handling interrupts
 //depending on the given opcode. Function takes in a time quantum to help simulate Round Robin Scheduling of CPU.
-	public int execute(int time, Semaphore semaph, RRCPU core) throws InterruptedException {
+	public int execute(int time, Semaphore semaph, CPU core) throws InterruptedException {
 		
-		main.execution[core.getThreadID()-1] = this;
+		main.execution[core.threadID-1] = this;
 		long start = System.currentTimeMillis();
 
 		if (this.start == 0) {
@@ -168,4 +170,5 @@ public class PCB {
 		return;
 
 	}
+	
 }

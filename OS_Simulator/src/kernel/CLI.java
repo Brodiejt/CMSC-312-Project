@@ -56,10 +56,12 @@ public class CLI extends Thread {
 			case "quit":
 				System.exit(0);
 				return;
+				
 			case "g":
 				System.out.println("Creating new Process");
 				main.readyQueue.queueEnqueue(main.generator.forkPCB());
 				break;
+				
 			case "run":
 				main.MainMemory.cleanMemory();
 				try {
@@ -68,6 +70,7 @@ public class CLI extends Thread {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 			case "gtxt":
 				int number;
 				System.out.println("Enter the number of programs you would like to generate");
@@ -88,6 +91,7 @@ public class CLI extends Thread {
 			}
 			
 		}
+		
 	}
 
 

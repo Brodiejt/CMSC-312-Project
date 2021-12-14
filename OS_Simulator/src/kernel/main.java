@@ -1,6 +1,8 @@
 package kernel;
 
+import java.util.*;
 import java.io.File;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -8,14 +10,28 @@ import java.util.Scanner;
 public class main {
 
 	
+	//Command Line Interface Thread
+	public static CLI CL = new CLI();
 	
 	//PCB queues
 	public static Queue jobQueue = new Queue(999);
 	public static Queue readyQueue = new Queue(999);
 	public static Queue IOQueue = new Queue(999);
 	
+	
+	//custom PCB comparator for priority queue
+	public static Comparator<PCB> customComparator = new Comparator<PCB>() {
+        @Override
+        public int compare(PCB s1, PCB s2) {
+            return s1.priority - s2.priority;
+        }
+    };
+	
+	//priority Ready Queue
+	public static PriorityQueue<PCB> pReadyQueue = new PriorityQueue<PCB>(customComparator);
+	
 	//Time quantum for RR execution
-	public static int TIME_QUANTUM = 30;
+	public static int TIME_QUANTUM = 5;
 	
 	//IO-Random event wait
 	public static long IO_WAIT = 60;
@@ -36,6 +52,8 @@ public class main {
 		
 		System.out.println("Welcome to my Operating System");
 		System.out.println("Booting System...");
+		
+		
 
 	
 		String[] commands = { "generate", "run", "clean", "stop" };
@@ -78,7 +96,7 @@ public class main {
 		System.out.println("Executing Processes..");
 		PCB currentlyRunning;
 
-		int pCounter = 0;
+		int counter = 0;
 
 		// Open Program folder and parse txt files
 		final File programs = new File("src\\kernel\\Programs");
@@ -92,18 +110,29 @@ public class main {
 			// System.out.println("Opening file for process: "+ block.pid);
 			MainMemory.loadToMemory(fileEntry, block);
 			block.state = 2;
-			// block.printMemory();
+			
+			
+			//Stores half of the programs into priority ready queue
+			if(counter%2==0) {
 			readyQueue.queueEnqueue(block);
-			pCounter++;
+			}
+			else {
+				pReadyQueue.add(block);
+			}
+			counter++;
+			
 			continue;
 		}
 		
 		//Initialize Command Line Interface
-		(new CLI()).start();
+		if(!CL.isAlive()) {
+		CL.start();
+		}
 
 		//Create CPU core Threads to simulate multiprocessing
-		for(int i=1;i<=8;i++) {
+		for(int i=1;i<=4;i++) {
 			(new RRCPU(i)).start();
+			(new PCPU(i+4)).start();
 		}
 	}
 

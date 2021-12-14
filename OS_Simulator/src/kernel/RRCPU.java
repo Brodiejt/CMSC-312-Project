@@ -3,20 +3,14 @@ package kernel;
 import java.util.ArrayList;
 
 //Simulation of CPU core using round-Robin execution
-public class RRCPU extends Thread {
+public class RRCPU extends CPU {
 	
-	private int threadID;
-	
-	// List of turnaround times
-	public ArrayList<Integer> turnarounds = new ArrayList<Integer>();
-
-			// list of wait times
-	public ArrayList<Integer> waits = new ArrayList<Integer>();
-
 	
 	public RRCPU(int id) {
-		this.threadID = id;
+		super(id);
 	}
+	
+
 	
 	@Override
 	public void run() {
@@ -105,14 +99,25 @@ public class RRCPU extends Thread {
 			
 		}
 		
-		
+		long RRFinish = System.currentTimeMillis();
 		int tavg = 0;
 
-		tavg /= turnarounds.size();
-		long RRFinish = System.currentTimeMillis();
-		System.out.println("\nRound Robin Executuon Stats:-----------\n" +"CPU Core: "+ this.threadID +"\nTime Complemeted: "
-				+ (RRFinish - RRStart) + "\n" + "Average Turnaround Time: \n" + "Average Wait Time: \n");
+		try {
+		for(long time : this.turnarounds)
+			tavg += (int)time;
+		}
+		catch(ArithmeticException e) {
+			System.out.println("No Procesess ran on Core: "+this.threadID);
+		}
 		
+		//(main.CL.isAlive())
+			//main.CL.stop();
+			
+		System.out.println("\nRound Robin Executuon Stats:-----------\n" +"CPU Core: "+ this.threadID +"\nTime Complemeted: "
+				+ (RRFinish - RRStart) + " milliseconds\n" + "Average Turnaround Time: "+tavg+" milliseconds");
+		
+		//main.CL.start();
+
 
 	}
 	public int getThreadID() {
